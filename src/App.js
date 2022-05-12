@@ -2,12 +2,23 @@
 
 import logo from './logo.svg';
 import './App.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Two from "two.js";
 import { ZUI } from "two.js/extras/jsm/zui.js";
 import { GetMap } from "./Map.js";
 
 function App() {
+
+  const [map, setMap] = useState({});
+
+  useEffect(() => {
+    // Setup async state polling
+    const fetchData = async () => {
+      const x = await GetMap();
+      setMap(x);
+    }
+    fetchData();
+  }, [])
 
   useEffect(() => {
     let elem = document.getElementById('t');
@@ -21,7 +32,7 @@ function App() {
     var stage = new Two.Group();
     two.add(stage);
 
-    let map = GetMap();
+    // let map = await GetMap();
 
     const ROOM_SIZE = 100;
     const ROOM_OFFSET = 400;
@@ -49,16 +60,10 @@ function App() {
     }
 
     const renderRoom = (x, y, room) => {
-      let roomIcon = new Two.Rectangle(x, y, ROOM_SIZE, ROOM_SIZE);
-      stage.add(roomIcon);
-      two.update();
-      console.log(roomIcon.renderer);
-
       const mouseOver = () => {
-        console.log(room.name);
+//        document.getElementById("hoverText").body = "Yep!";
+        console.debug("Yep yep yep");
       }
-
-      roomIcon.renderer.elem.addEventListener('mouseover', mouseOver, false);
 
       if (room.symbol != "") {
         let txt = two.makeText(room.symbol, x, y);
@@ -66,6 +71,11 @@ function App() {
         stage.add(txt);
         two.update();
         txt.renderer.elem.addEventListener('mouseover', mouseOver, false);
+      } else {
+        let roomIcon = new Two.Rectangle(x, y, ROOM_SIZE, ROOM_SIZE);
+        stage.add(roomIcon);
+        two.update();
+        roomIcon.renderer.elem.addEventListener('mouseover', mouseOver, false);
       }
     }
 
@@ -108,6 +118,11 @@ function App() {
       // Walk through each room in the map to discover
 
       let [room, srcX, srcY] = toVisit.pop();
+      if (room == null) {
+        console.error("Expected room, but not found");
+        return;
+      }
+
       if (processed.has(room)) {
         continue;
       }
@@ -133,59 +148,40 @@ function App() {
 
       // Render the alternative exits found at this room
       if (alternativeExists.length > 0) {
+        const exitGapSize = 10;
+        const containerOrigin = new Two.Group();
+        containerOrigin.position = new Two.Vector(srcX - ROOM_SIZE / 8 + ROOM_SIZE / 2, srcY + ROOM_SIZE / 2 - ROOM_SIZE / 8);
 
-        let roomContainer = two.makeRoundedRectangle(srcX + ROOM_SIZE + 25, srcY + ROOM_SIZE + 25, ROOM_OFFSET / 2, ROOM_OFFSET / 2);
-        roomContainer.fill = 'gray';
-        stage.add(roomContainer)
+        // Add a container to hold the room icons
+        const containerHeight = ROOM_SIZE / 2;
+        const containerWidth = ((ROOM_SIZE / 4) + exitGapSize) * alternativeExists.length + (2 * exitGapSize);
+        let roomContainer = two.makeRoundedRectangle(containerWidth / 2, containerHeight / 2, containerWidth, containerHeight);
+        roomContainer.fill = 'lightgray';
+        containerOrigin.add(roomContainer);
+        stage.add(containerOrigin);
+
+        // Add each exit
+        const exitIconOffset = 20;
+        for (let i = 0; i < alternativeExists.length; i++) {
+          let icon = two.makeText("⬆️", 0, 0);
+          containerOrigin.add(icon);
+
+          icon.scale = 3;
+          const width = icon.scale * 13 + exitGapSize;
+          icon.position = new Two.Vector((width * i) + exitIconOffset, ROOM_SIZE / 4);
+          two.update();
+
+
+
+          // icon.width;
+          // icon.height;
+
+          // icon.width
+        }
       }
 
       processed.add(room);
     }
-
-    // let offset = 0;
-    // const size = 100;
-    // let roomIcon = new Two.Rectangle(0, 0, size, size);
-    // stage.add(roomIcon);
-    // let edge = new Two.Rectangle(size + size / 2, 0, size*2, size/2);
-    // stage.add(edge);
-    // edge = new Two.Rectangle(((offset * size) * 5) - (size + size / 2), 0, size*2, size/2);
-    // stage.add(edge);
-
-    // offset += 1;
-    // roomIcon = new Two.Rectangle((offset * size) * 5, 0, size, size);
-    // stage.add(roomIcon);
-    // edge = new Two.Rectangle(((offset * size) * 5) + (size + size / 2), 0, size*2, size/2);
-    // stage.add(edge);
-    // edge = new Two.Rectangle(((offset * size) * 5) - (size + size / 2), 0, size*2, size/2);
-    // stage.add(edge);
-
-    // offset += 1;
-    // roomIcon = new Two.Rectangle((offset * size) * 5, 0, size, size);
-    // stage.add(roomIcon);
-    // edge = new Two.Rectangle(((offset * size) * 5) + (size + size / 2), 0, size*2, size/2);
-    // stage.add(edge);
-    // edge = new Two.Rectangle(((offset * size) * 5) - (size + size / 2), 0, size*2, size/2);
-    // stage.add(edge);
-
-    // for (var i = 0; i < 100; i++) {
-    //   var x = Math.random() * two.width * 2 - two.width;
-    //   var y = Math.random() * two.height * 2 - two.height;
-    //   var size = 50;
-    //   let localShape = new Two.Rectangle(x, y, size, size);
-    //   localShape.name = i;
-    //   var shape = localShape;
-    //   shape.rotation = Math.random() * Math.PI * 2;
-    //   shape.noStroke().fill = '#ccc';
-    //   stage.add(shape);
-    //   two.update();
-    //   shape._renderer.elem.addEventListener('click', (a, b, c) => {
-    //     console.log(localShape.name);
-    //     localShape.noStroke().fill = 'orange';
-    //   }, false);
-    // }
-
-    // shape.fill = 'red';
-    // shape.position.set(two.width / 2, two.height / 2);
 
     addZUI();
 
@@ -317,15 +313,20 @@ function App() {
 
     }
 
-  }, []);
+  }, [map]);
 
   return (
     <div className="App">
-      <header className="App-content">
+      <class className="App-content">
+
         <div id="t"></div>
-      </header>
+      </class>
     </div>
   );
 }
+
+{/* <div className="App-status">
+<h3 id="hoverText">I am floating</h3>
+</div> */}
 
 export default App;

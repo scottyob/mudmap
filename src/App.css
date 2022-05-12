@@ -17,10 +17,19 @@
   background-color: #dfe2dd;
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
  }
 
 .App-link {
   color: #61dafb;
+}
+
+.App-status {
+  background-color: white;
+}
+
+.App-status h3 {
+  font-size: medium;
 }
 
 @keyframes App-logo-spin {
