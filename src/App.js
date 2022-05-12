@@ -321,7 +321,7 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
+      <header className="App-content">
         <div id="t"></div>
       </header>
     </div>
