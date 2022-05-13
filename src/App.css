@@ -18,24 +18,46 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
- }
+}
+
+.App-content text {
+  user-select: none;
+  /* supported by Chrome and Opera */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+}
 
 .App-link {
   color: #61dafb;
 }
 
 .App-status {
-  background-color: white;
+  background-color: black;
+  color: gray;
+  z-index: 100;
 }
 
 .App-status h3 {
   font-size: medium;
+  margin-bottom: 2px;
+  color: #28909b;
+}
+
+.App-status .hoverText {
+  color: 
 }
 
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
