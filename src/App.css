@@ -41,12 +41,15 @@
   background-color: black;
   color: gray;
   z-index: 100;
+  padding: 5px;
 }
 
 .App-status h3 {
   font-size: medium;
-  margin-bottom: 2px;
   color: #28909b;
+  display: inline;
+  margin: 10px;
+  border: 10px;
 }
 
 .App-status .hoverText {
