@@ -60,23 +60,31 @@ function App() {
     }
 
     const renderRoom = (x, y, room) => {
-      const tmp2 = () => {
+      const roomMouseOver = () => {
+        // Hovered over a new room
         document.getElementById("hoverText").innerHTML = room.name;
         document.getElementById('exitName').innerText = "";
       }
+      const roomClick = () => {
+        // Clicked on a room
+        alert("Room clicked");
+      }
 
+      let elem = null;
       if (room.symbol != "") {
         let txt = two.makeText(room.symbol, x, y);
         txt.scale = 10;
         stage.add(txt);
         two.update();
-        txt.renderer.elem.addEventListener('mouseover', () => { tmp2() }, false);
+        elem = txt;        
       } else {
         let roomIcon = new Two.Rectangle(x, y, ROOM_SIZE, ROOM_SIZE);
+        elem = roomIcon;
         stage.add(roomIcon);
         two.update();
-        roomIcon.renderer.elem.addEventListener('mouseover', () => { tmp2() }, false);
       }
+      elem.renderer.elem.addEventListener('mouseover', () => { roomMouseOver() }, false);
+      elem.renderer.elem.addEventListener('click', () => {roomClick() }, false);
     }
 
     const DrawExit = (srcX, srcY, exit) => {
@@ -175,7 +183,11 @@ function App() {
 
           // Allow us to render the text
           icon.renderer.elem.addEventListener('mouseover', () => {
+            // Exit was mouse overed
             document.getElementById('exitName').innerText = exit.name;
+          }, false);
+          icon.renderer.elem.addEventListener('click', () => {
+            // Exit was clicked
           }, false);
 
         }
