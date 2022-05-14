@@ -27,13 +27,13 @@ function App() {
   useEffect(() => {
     // Sets up polling for new players and maps
     const pollMap = async () => {
-      const pst = await axios.post('http://localhost:3001/map');
+      const pst = await axios.post('https://cogg.home.scottyob.com/map');
       setMapData(pst.data);
     }
     pollMap();
 
     // Adds a listener for map events
-    const es = new EventSource("http://localhost:3001/");
+    const es = new EventSource("https://cogg.home.scottyob.com/");
     es.addEventListener('users', ev => {
       setPlayers(JSON.parse(ev.data));
     });
