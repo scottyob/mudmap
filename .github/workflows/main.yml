@@ -42,7 +42,7 @@ jobs:
         run: echo ${{ steps.buildx.outputs.platforms }}
 
       - name: Build and push API
-        id: docker_build
+        id: docker_build_api
         uses: docker/build-push-action@v2
         with:
           context: ./
@@ -52,7 +52,7 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/mudmap-api:latest
 
       - name: Build and push Web
-        id: docker_build
+        id: docker_build_web
         uses: docker/build-push-action@v2
         with:
           context: ./
