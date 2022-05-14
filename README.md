@@ -16,7 +16,7 @@ In the project directory, you can run:
 ### `npm start`
 
 Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Open [http://localhost:3000](http://localhost:3000) to view it in your browse}{r.
 
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
@@ -36,3 +36,9 @@ $ sudo chmod 0755 /mnt/node02
 $ sudo ln -s /mnt/node02/map.map /map
 ```
 
+## Setting up (development)
+There are two components, a server and react-server (until I can figure this out to get them in one)
+run the server with:
+```
+$ npm run server
+```

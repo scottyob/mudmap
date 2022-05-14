@@ -1,28 +1,44 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, createRef } from 'react';
 import Two from "two.js";
 import { ZUI } from "two.js/extras/jsm/zui.js";
-import { GetMap } from "./Map.js";
 import { useNavigate } from "react-router-dom";
 
 function MapRenderer(props) {
-
-    const [map, setMap] = useState({});
-    const roomNum = props?.id || 1;
-    const setRoomNum = () => {};
+    const map = props.map;
+    let roomNum = props?.id || 1;
+    const setRoomNum = () => { };
     // const [roomNum, setRoomNum] = useState(1);
     let navigate = useNavigate();
 
     useEffect(() => {
         // Set the initial room number from the input properties
         setRoomNum(props?.id || 1);
-
-        // Setup async state polling
-        const fetchData = async () => {
-            const x = await GetMap();
-            setMap(x);
-        }
-        fetchData();
     }, [])
+
+
+    useEffect(() => {
+        // Update the map to follow a player, if we should be following a player
+        if(props.player != null) {
+            if(props.player in props.playerLocations) {
+                roomNum = props.playerLocations[props.player];
+            }
+        }
+    }, [props])
+
+    // Render the players to click at the top right of the screen
+    let playerElements = Object.keys(props.players).map((player, i) => {
+        return (
+            <span
+                key={player}
+                onClick={() => {
+                    navigate("/player/" + player);
+                }}
+                onMouseOver={() => {
+                    document.getElementById("hoverText").innerHTML = player;
+                    document.getElementById("roomID").innerText = "Player";
+                    document.getElementById('exitName').innerHTML = "";
+                }}>🧍</span>)
+    });
 
     useEffect(() => {
         let elem = document.getElementById('t');
@@ -35,8 +51,6 @@ function MapRenderer(props) {
 
         var stage = new Two.Group();
         two.add(stage);
-
-        // let map = await GetMap();
 
         const ROOM_SIZE = 100;
         const ROOM_OFFSET = 400;
@@ -68,7 +82,11 @@ function MapRenderer(props) {
                 // Hovered over a new room
                 document.getElementById("hoverText").innerHTML = room.name;
                 document.getElementById("roomID").innerText = room.vnum;
-                document.getElementById('exitName').innerText = "";
+                let exitTxt = "";
+                if(room.players.length > 0) {
+                    exitTxt = "(people: " + room.players.join() + ")";
+                }
+                document.getElementById('exitName').innerText = exitTxt;
             }
             const roomClick = () => {
                 // Clicked on a room
@@ -89,6 +107,14 @@ function MapRenderer(props) {
                 stage.add(roomIcon);
                 two.update();
             }
+
+            // If there are players, draw them
+            if(room.players.length > 0) {
+                const playerEmoji = two.makeText("🧍", x, y);
+                playerEmoji.scale = 5;
+                stage.add(playerEmoji);
+            }
+
             elem.renderer.elem.addEventListener('mouseover', () => { roomMouseOver() }, false);
             elem.renderer.elem.addEventListener('click', () => { roomClick() }, false);
         }
@@ -341,8 +367,11 @@ function MapRenderer(props) {
         <class className="App-content">
             <div className="App-status">
                 <div>
-                    <span id="roomID">23</span>: 
+                    <span id="roomID">23</span>:
                     <h3 id="RoomNameContainer">[<span id="hoverText">I am floating</span>]</h3>
+                    <div className='players'>
+                        {playerElements}
+                    </div>
                 </div>
                 <div id="exitName">exit name</div>
             </div>
