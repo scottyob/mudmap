@@ -24,7 +24,7 @@ sse.post('/map', (req, res) => {
     res.sendFile('/map');
 });
 sse.listen(3001, () => {
-    console.log("Started SSE client app on port 3000");
+    console.log("Started SSE client app on port 3001");
 });
 
 // Small publisher app to allow (presumably) trusted clients to publish
