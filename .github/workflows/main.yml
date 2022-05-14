@@ -57,7 +57,7 @@ jobs:
         with:
           context: ./
           platforms: linux/amd64,linux/arm64,linux/arm/v7
-          file: ./Dockerfile.api
+          file: ./Dockerfile.web
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/mudmap-web:latest
 
